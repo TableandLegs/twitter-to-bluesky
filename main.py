@@ -17,14 +17,13 @@ def save_seen(seen):
     with open(STATE_FILE, 'w') as f:
         json.dump(list(seen), f)
 
-def fetch_tweets():
+def fetch_tweets(handle):
     """
-    Fetch the most recent tweets for TWITTER_HANDLE.
+    Fetch the most recent tweets for a given TWITTER_HANDLE.
     Returns a list of dicts: [{'id': ..., 'text': ...}, ...].
     If we hit a rate limit (429), returns an empty list.
     """
     BEARER = os.environ['TWITTER_BEARER_TOKEN']
-    handle = os.environ['TWITTER_HANDLE']
     headers = {"Authorization": f"Bearer {BEARER}"}
 
     # 1) Look up the numeric user ID for the handle
@@ -47,7 +46,7 @@ def fetch_tweets():
         params=params
     )
     if resp.status_code == 429:
-        print("⚠️  Hit Twitter rate limit, skipping this run.")
+        print("⚠️ Hit Twitter rate limit, skipping this run.")
         return []
     resp.raise_for_status()
 
@@ -64,14 +63,19 @@ def post_to_bluesky(text: str):
 
 def main():
     seen = load_seen()
-    tweets = fetch_tweets()
+    
+    # List of Twitter handles
+    handles = [os.environ['TWITTER_HANDLE1'], os.environ['TWITTER_HANDLE2']]
 
-    for tw in tweets:
-        if tw['id'] in seen:
-            continue
-        print("→ Reposting tweet:", tw['text'])
-        post_to_bluesky(tw['text'])
-        seen.add(tw['id'])
+    for handle in handles:
+        tweets = fetch_tweets(handle)
+
+        for tw in tweets:
+            if tw['id'] in seen:
+                continue
+            print("→ Reposting tweet from", handle, ":", tw['text'])
+            post_to_bluesky(tw['text'])
+            seen.add(tw['id'])
 
     save_seen(seen)
 
