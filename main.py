@@ -2,6 +2,10 @@ import os
 import json
 import requests
 from atproto import Client
+from dotenv import load_dotenv  # Import load_dotenv to manage environment variables
+
+# Load environment variables from the .env file
+load_dotenv()
 
 STATE_FILE = 'seen_ids.json'
 
