@@ -60,6 +60,9 @@ def fetch_tweets(handle):
 
 def post_to_bluesky(text: str):
     """Authenticate to Bluesky and create a new post with the given text."""
+    # Assuming 'tweet_text' is the variable with your Twitter content
+    tweet_text = tweet_text[:300]
+
     bsky = Client()
     bsky.login(os.environ['BLUESKY_HANDLE'], os.environ['BLUESKY_PASSWORD'])
     bsky.post(text=text)
