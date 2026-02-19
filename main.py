@@ -27,6 +27,9 @@ def fetch_tweets(handle):
     Returns a list of dicts: [{'id': ..., 'text': ...}, ...].
     If we hit a rate limit (429), returns an empty list.
     """
+    print("Token exists:", bool(BEARER_TOKEN))
+    print("First 10 chars:", BEARER_TOKEN[:10] if BEARER_TOKEN else "None")
+    
     BEARER = os.environ['TWITTER_BEARER_TOKEN']
     headers = {"Authorization": f"Bearer {BEARER}"}
 
